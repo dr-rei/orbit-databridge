@@ -54,6 +54,9 @@ $signParams = $env:VPK_SIGN_PARAMS
 if ($RequireSigning -and [string]::IsNullOrWhiteSpace($signParams)) {
     throw 'Production packaging requires VPK_SIGN_PARAMS. Configure a public code-signing certificate before creating a public release.'
 }
+if ($RequireSigning -and -not (Get-Command signtool.exe -ErrorAction SilentlyContinue)) {
+    throw 'Production packaging requires signtool.exe on PATH. Install the Windows SDK or use the hosted release workflow.'
+}
 
 $vpkArgs = @(
     'tool', 'run', 'vpk', '--', 'pack',

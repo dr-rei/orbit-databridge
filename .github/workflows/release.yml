@@ -54,6 +54,21 @@ jobs:
           "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           "ORBIT_SIGNING_PFX=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
+      - name: Locate SignTool
+        shell: pwsh
+        run: |
+          $programFilesX86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)')
+          $searchRoot = Join-Path $programFilesX86 'Windows Kits\10\bin'
+          $signtool = Get-ChildItem -LiteralPath $searchRoot -Filter signtool.exe -Recurse -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if ($null -eq $signtool) {
+            throw 'signtool.exe was not found in the installed Windows SDK.'
+          }
+          $signtool.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          Write-Output "Using SignTool from $($signtool.FullName)"
+
       - name: Package signed Windows release
         shell: pwsh
         env:

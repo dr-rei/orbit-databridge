@@ -81,6 +81,8 @@ $env:VPK_SIGN_PARAMS = '/fd SHA256 /f "C:\secure\orbit-signing.pfx" /p "<certifi
 
 Keep signing material outside the repository. The `-RequireSigning` switch fails closed when `VPK_SIGN_PARAMS` is missing. For the hosted release workflow, the certificate and password are supplied as GitHub Actions secrets rather than stored in this project.
 
+For a public Windows release, use a publicly trusted Authenticode/OV certificate that your certificate provider allows you to use from CI. A self-signed certificate is suitable only for local testing because other users' Windows installations will not trust it. Microsoft currently recommends Azure Artifact Signing for supported regions, while eligible open-source projects can apply for free signing through SignPath Foundation. Both alternatives use a managed signing workflow rather than putting a private key in this repository.
+
 The older `scripts\publish-win.ps1` command remains useful for a fast raw developer executable. It is not an installed Velopack package and does not participate in automatic updates.
 
 ## Updates
