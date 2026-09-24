@@ -48,6 +48,9 @@ public sealed class MainWindowViewModel : ObservableObject
         this.profileStore = profileStore;
         this.historyStore = historyStore;
         this.updateService = updateService ?? new AppUpdateService();
+        updateStatus = this.updateService.IsStoreInstalled
+            ? "Updates are managed by Microsoft Store."
+            : updateStatus;
         sourceDraft = CreateSourceProfile();
         destinationDraft = CreateDestinationProfile();
 
@@ -85,6 +88,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public string BrandWorkspaceLabel => BrandIdentity.WorkspaceLabel;
     public string BrandSafetyLabel => BrandIdentity.SafetyLabel;
     public string CurrentVersion => updateService.CurrentVersion;
+    public bool ShowAppUpdateControls => !updateService.IsStoreInstalled;
     public string UpdateStatus
     {
         get => updateStatus;

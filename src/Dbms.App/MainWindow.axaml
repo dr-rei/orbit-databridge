@@ -284,7 +284,7 @@
           <TextBlock Text="{Binding ProgressSummary}" Classes="caption" TextWrapping="Wrap" />
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
             <TextBlock Text="{Binding UpdateStatus}" Classes="caption" VerticalAlignment="Center" MaxWidth="260" TextWrapping="Wrap" />
-            <Button Classes="compact" Content="Check for updates" Command="{Binding CheckForUpdatesCommand}" />
+            <Button Classes="compact" Content="Check for updates" IsVisible="{Binding ShowAppUpdateControls}" Command="{Binding CheckForUpdatesCommand}" />
             <Button Classes="primary compact" Content="Install update" IsVisible="{Binding UpdateAvailable}" Command="{Binding ApplyUpdateCommand}" />
           </StackPanel>
         </Grid>

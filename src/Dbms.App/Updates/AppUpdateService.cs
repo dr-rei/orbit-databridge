@@ -18,6 +18,11 @@ public sealed class AppUpdateService
 
     public AppUpdateService()
     {
+        if (PackageIdentity.IsPackaged)
+        {
+            return;
+        }
+
         try
         {
             updateManager = new UpdateManager(
@@ -29,13 +34,20 @@ public sealed class AppUpdateService
         }
     }
 
-    public bool IsInstalled => updateManager?.IsInstalled == true;
+    public bool IsStoreInstalled => PackageIdentity.IsPackaged;
+
+    public bool IsInstalled => !IsStoreInstalled && updateManager?.IsInstalled == true;
 
     public string CurrentVersion => updateManager?.CurrentVersion?.ToString() ?? GetAssemblyVersion();
 
     public async Task<UpdateCheckResult> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
+
+        if (IsStoreInstalled)
+        {
+            return new(true, false, "Updates are managed by Microsoft Store.");
+        }
 
         if (updateManager is null)
         {

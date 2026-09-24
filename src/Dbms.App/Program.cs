@@ -1,4 +1,5 @@
 using Avalonia;
+using Dbms.App.Updates;
 using Velopack;
 
 namespace Dbms.App;
@@ -8,7 +9,11 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        VelopackApp.Build().Run();
+        if (!PackageIdentity.IsPackaged)
+        {
+            VelopackApp.Build().Run();
+        }
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 

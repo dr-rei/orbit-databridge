@@ -1,0 +1,67 @@
+name: Store MSIX package
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, for example 0.1.0'
+        required: true
+        default: '0.1.0'
+        type: string
+      package_identity_name:
+        description: 'Partner Center Product identity: Name'
+        required: true
+        type: string
+      publisher:
+        description: 'Partner Center Product identity: Publisher'
+        required: true
+        type: string
+      publisher_display_name:
+        description: 'Partner Center Product identity: PublisherDisplayName'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore .\Dbms.slnx
+
+      - name: Build
+        run: dotnet build .\Dbms.slnx -c Release --no-restore --verbosity minimal
+
+      - name: Test
+        run: dotnet test .\tests\Dbms.Core.Tests\Dbms.Core.Tests.csproj -c Release --no-restore --verbosity normal
+
+      - name: Build Store upload package
+        env:
+          STORE_VERSION: ${{ inputs.version }}
+          STORE_IDENTITY_NAME: ${{ inputs.package_identity_name }}
+          STORE_PUBLISHER: ${{ inputs.publisher }}
+          STORE_PUBLISHER_DISPLAY_NAME: ${{ inputs.publisher_display_name }}
+        run: >-
+          .\scripts\package-msix.ps1
+          -Version $env:STORE_VERSION
+          -PackageIdentityName $env:STORE_IDENTITY_NAME
+          -Publisher $env:STORE_PUBLISHER
+          -PublisherDisplayName $env:STORE_PUBLISHER_DISPLAY_NAME
+
+      - name: Upload MSIX package artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: orbit-databridge-msix-${{ inputs.version }}
+          path: artifacts/msix/*.msixupload
+          if-no-files-found: error

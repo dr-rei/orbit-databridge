@@ -55,7 +55,7 @@ dotnet run --project .\src\Dbms.App\Orbit.DataBridge.csproj
 
 The application stores profile metadata and job history under `%LOCALAPPDATA%\DbmsTransfer` for compatibility with the current technical release name. Passwords are not written to the profile JSON. When enabled, they are encrypted with Windows DPAPI for the current Windows user.
 
-## Public Windows release package
+## GitHub Windows release package (Velopack)
 
 The public installer is built with the checked-in Velopack tool manifest and the packaging script:
 
@@ -85,6 +85,30 @@ For a public Windows release, use a publicly trusted Authenticode/OV certificate
 
 The older `scripts\publish-win.ps1` command remains useful for a fast raw developer executable. It is not an installed Velopack package and does not participate in automatic updates.
 
+## Microsoft Store release (MSIX)
+
+The Store distribution is a separate release lane from the GitHub Velopack installer. The checked-in `Store MSIX package` workflow creates an x64 `.msixupload` artifact. Microsoft Store signs the submitted MSIX after certification, so this path does not require a PFX file, a signing certificate, or the `ORBIT_SIGNING_CERT_*` GitHub secrets.
+
+Before running the workflow:
+
+1. Create the Orbit DataBridge product in [Microsoft Partner Center](https://partner.microsoft.com/dashboard).
+2. Reserve the app name and open **Product management > Product identity**.
+3. Copy the exact, case-sensitive values for **Name**, **Publisher**, and **PublisherDisplayName**. The package manifest must match these values exactly; the workflow intentionally requires them instead of using placeholders.
+
+Run **Actions > Store MSIX package > Run workflow** in GitHub and provide those three identity values plus the release version, normally `0.1.0` for the first submission. Download the generated `.msixupload` artifact and upload it in the Partner Center submission under **Packages**. Complete the store listing, screenshots, privacy information, age rating, and other certification fields before submitting.
+
+The Store workflow uses the Windows SDK on `windows-latest` to run `makeappx.exe`, publishes `Orbit.DataBridge.exe` self-contained for `win-x64`, generates the branded Store icons, validates the manifest, and includes an optional `.appxsym` symbol archive for diagnostics. For local packaging, install the Windows SDK first and run:
+
+```powershell
+.\scripts\package-msix.ps1 `
+  -Version 0.1.0 `
+  -PackageIdentityName '<Partner Center Name>' `
+  -Publisher '<Partner Center Publisher>' `
+  -PublisherDisplayName '<Partner Center PublisherDisplayName>'
+```
+
+Microsoft's references for this flow are [app package requirements](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/app-package-requirements), [viewing Store identity details](https://learn.microsoft.com/en-us/windows/apps/publish/view-app-identity-details), and [creating an app package with MakeAppx](https://learn.microsoft.com/en-us/windows/msix/package/create-app-package-with-makeappx-tool). The Store-installed build detects its package identity, hides the GitHub update controls, and reports that updates are managed by Microsoft Store.
+
 ## Updates
 
 The installed application uses Velopack to check the public stable feed at:
@@ -93,14 +117,15 @@ The installed application uses Velopack to check the public stable feed at:
 
 After a user installs `Orbit.DataBridge-stable-Setup.exe`, the application checks for a newer stable release and exposes **Check for updates** and **Install update** in the footer. The update feed is public so a normal user can download releases without a GitHub account.
 
-The update check is disabled for raw `dotnet run` and raw publish output. This avoids confusing development builds with installed releases and prevents local builds from unexpectedly replacing themselves.
+The update check is disabled for raw `dotnet run` and raw publish output. Store-installed builds use Microsoft Store update delivery instead of the GitHub feed and do not show the Velopack update controls.
 
 ## GitHub release workflow
 
-The repository includes two workflows:
+The repository includes three workflows:
 
 - `CI` builds the solution, runs the test project, and checks NuGet dependencies on pushes to `main` and on pull requests.
 - `Release` runs for a `v*` tag, packages the signed Windows release, and creates a GitHub release with the installer, portable archive, update feed, and checksums.
+- `Store MSIX package` runs manually, accepts the Partner Center identity values, and uploads an unsigned `.msixupload` artifact for Microsoft Store submission and re-signing.
 
 Before creating the first public release, configure these repository secrets:
 
