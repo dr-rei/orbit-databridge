@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>Dbms.App</RootNamespace>
+    <AssemblyName>Orbit.DataBridge</AssemblyName>
+    <Product>Orbit DataBridge</Product>
+    <Description>Clarity for every data move.</Description>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <PublishSingleFile Condition="'$(PublishSingleFile)' == ''">false</PublishSingleFile>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dbms.Core\Dbms.Core.csproj" />
+    <ProjectReference Include="..\Dbms.Infrastructure\Dbms.Infrastructure.csproj" />
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Velopack" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+</Project>

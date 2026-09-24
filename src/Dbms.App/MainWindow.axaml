@@ -1,0 +1,294 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Dbms.App.ViewModels"
+        x:Class="Dbms.App.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding BrandWindowTitle}"
+        Width="1320"
+        Height="820"
+        MinWidth="1050"
+        MinHeight="680">
+  <Grid RowDefinitions="Auto,*">
+    <Border Grid.Row="0" Background="#14213D" Padding="24,16">
+      <Grid ColumnDefinitions="360,*">
+        <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+          <Grid Width="36" Height="36">
+            <Border Background="#5B5CE2" CornerRadius="12" />
+            <Ellipse Width="18" Height="18" Stroke="#FFFFFF" StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Ellipse Width="6" Height="6" Fill="#2DBE9B" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,7,6,0" />
+          </Grid>
+          <StackPanel Spacing="0">
+            <TextBlock Classes="brand-wordmark" Text="{Binding BrandSuiteName}" />
+            <TextBlock Classes="product-wordmark" Text="{Binding BrandProductName}" />
+            <TextBlock Classes="product-descriptor" Text="{Binding BrandProductDescriptor}" />
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <TextBlock Text="{Binding BrandTagline}" FontSize="13" Foreground="#E6ECF5" />
+            <TextBlock Text="·" FontSize="13" Foreground="#AEBBD1" />
+            <TextBlock Text="{Binding CurrentVersion}" FontSize="13" Foreground="#AEBBD1" />
+          </StackPanel>
+          <TextBlock Text="{Binding StatusMessage}" Foreground="#AEBBD1" VerticalAlignment="Center" HorizontalAlignment="Right" TextWrapping="Wrap" MaxWidth="800" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="220,*">
+      <Border Grid.Column="0" Background="#F1F3F8" Padding="14,20">
+        <Grid RowDefinitions="Auto,*,Auto">
+          <StackPanel Spacing="3">
+            <TextBlock Classes="eyebrow" Text="{Binding BrandWorkspaceLabel}" Margin="14,0,0,8" />
+            <Button Classes="nav" Content="Connect sources" Command="{Binding ShowConnectionsCommand}" />
+            <Button Classes="nav" Content="Schema lens" Command="{Binding ShowStructureCommand}" />
+            <Button Classes="nav" Content="Row lens" Command="{Binding ShowDataCommand}" />
+            <Button Classes="nav" Content="Move plan" Command="{Binding ShowTransferCommand}" />
+            <Button Classes="nav" Content="Activity" Command="{Binding ShowHistoryCommand}" />
+          </StackPanel>
+          <Border Grid.Row="2" Classes="safety">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{Binding BrandSafetyLabel}" Classes="eyebrow" Foreground="#7A4E00" />
+              <TextBlock Text="Parameterized INSERT statements only. Existing destination rows are preserved." TextWrapping="Wrap" FontSize="12" Foreground="#7A4E00" />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Border>
+
+      <Grid Grid.Column="1" RowDefinitions="*,Auto" Margin="28,24,28,16">
+        <Grid Grid.Row="0">
+          <ScrollViewer IsVisible="{Binding IsConnectionsSection}" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="18">
+              <StackPanel Spacing="4">
+                <TextBlock Classes="title" Text="Connect your sources" />
+                <TextBlock Classes="muted" Text="Bring two authorized systems into one clear workspace. Saved passwords use Windows user-scoped protection and are optional." TextWrapping="Wrap" />
+              </StackPanel>
+
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                <Border Classes="card">
+                  <StackPanel Spacing="10">
+                    <TextBlock Classes="section-title" Text="Source system" />
+                    <TextBlock Classes="caption" Text="The system we read from." />
+                    <TextBlock Classes="caption" Text="Profile name" />
+                    <TextBox Text="{Binding SourceDraft.Name, Mode=TwoWay}" Watermark="Source profile" />
+                    <TextBlock Classes="caption" Text="Database engine" />
+                    <ComboBox ItemsSource="{Binding EngineOptions}" SelectedItem="{Binding SourceDraft.Engine, Mode=TwoWay}" />
+                    <Grid ColumnDefinitions="2*,*" ColumnSpacing="10">
+                      <StackPanel Spacing="4">
+                        <TextBlock Classes="caption" Text="Server / host (not used for SQLite)" />
+                        <TextBox Text="{Binding SourceDraft.Server, Mode=TwoWay}" Watermark="localhost" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Classes="caption" Text="Port" />
+                        <TextBox Text="{Binding SourceDraft.Port, Mode=TwoWay}" Watermark="Default" />
+                      </StackPanel>
+                    </Grid>
+                    <TextBlock Classes="caption" Text="Database name or SQLite file path" />
+                    <TextBox Text="{Binding SourceDraft.Database, Mode=TwoWay}" Watermark="database" />
+                    <TextBlock Classes="caption" Text="Username" />
+                    <TextBox Text="{Binding SourceDraft.Username, Mode=TwoWay}" Watermark="Optional for SQLite" />
+                    <TextBlock Classes="caption" Text="Password (never written unless secure-save is checked)" />
+                    <TextBox Text="{Binding SourceDraft.Password, Mode=TwoWay}" PasswordChar="●" />
+                    <CheckBox Content="Save password in Windows user vault" IsChecked="{Binding SourceDraft.SavePassword, Mode=TwoWay}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                      <Button Classes="primary" Content="Test source" Command="{Binding TestSourceCommand}" />
+                      <Button Content="Save source profile" Command="{Binding SaveSourceProfileCommand}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="card">
+                  <StackPanel Spacing="10">
+                    <TextBlock Classes="section-title" Text="Destination system" />
+                    <TextBlock Classes="caption" Text="The system we protect while adding missing rows." />
+                    <TextBlock Classes="caption" Text="Profile name" />
+                    <TextBox Text="{Binding DestinationDraft.Name, Mode=TwoWay}" Watermark="Destination profile" />
+                    <TextBlock Classes="caption" Text="Database engine" />
+                    <ComboBox ItemsSource="{Binding EngineOptions}" SelectedItem="{Binding DestinationDraft.Engine, Mode=TwoWay}" />
+                    <Grid ColumnDefinitions="2*,*" ColumnSpacing="10">
+                      <StackPanel Spacing="4">
+                        <TextBlock Classes="caption" Text="Server / host (not used for SQLite)" />
+                        <TextBox Text="{Binding DestinationDraft.Server, Mode=TwoWay}" Watermark="localhost" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Classes="caption" Text="Port" />
+                        <TextBox Text="{Binding DestinationDraft.Port, Mode=TwoWay}" Watermark="Default" />
+                      </StackPanel>
+                    </Grid>
+                    <TextBlock Classes="caption" Text="Database name or SQLite file path" />
+                    <TextBox Text="{Binding DestinationDraft.Database, Mode=TwoWay}" Watermark="database" />
+                    <TextBlock Classes="caption" Text="Username" />
+                    <TextBox Text="{Binding DestinationDraft.Username, Mode=TwoWay}" Watermark="Optional for SQLite" />
+                    <TextBlock Classes="caption" Text="Password (never written unless secure-save is checked)" />
+                    <TextBox Text="{Binding DestinationDraft.Password, Mode=TwoWay}" PasswordChar="●" />
+                    <CheckBox Content="Save password in Windows user vault" IsChecked="{Binding DestinationDraft.SavePassword, Mode=TwoWay}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                      <Button Classes="primary" Content="Test destination" Command="{Binding TestDestinationCommand}" />
+                      <Button Content="Save destination profile" Command="{Binding SaveDestinationProfileCommand}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+              </Grid>
+
+              <Border Classes="card">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="10">
+                  <StackPanel Spacing="4">
+                    <TextBlock Classes="section-title" Text="Start with a clear baseline" />
+                    <TextBlock Classes="muted" Text="Run a read-only schema comparison before inspecting rows or planning a move." TextWrapping="Wrap" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Content="Reset drafts" Command="{Binding ResetDraftsCommand}" />
+                    <Button Classes="primary" Content="Compare structure" Command="{Binding CompareStructureCommand}" />
+                  </StackPanel>
+                  <Expander Grid.Row="1" Grid.ColumnSpan="2" Header="Saved profiles">
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                      <ListBox ItemsSource="{Binding SavedProfiles}" SelectedItem="{Binding SelectedSavedProfile, Mode=TwoWay}" Height="120">
+                        <ListBox.ItemTemplate>
+                          <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                              <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
+                              <TextBlock Text="{Binding Engine}" Classes="muted" />
+                            </StackPanel>
+                          </DataTemplate>
+                        </ListBox.ItemTemplate>
+                      </ListBox>
+                      <StackPanel Grid.Column="1" Spacing="8">
+                        <Button Content="Load as source" Command="{Binding LoadAsSourceCommand}" />
+                        <Button Content="Load as destination" Command="{Binding LoadAsDestinationCommand}" />
+                      </StackPanel>
+                      <Button Grid.Column="2" Content="Delete" Classes="danger" Command="{Binding DeleteSelectedProfileCommand}" VerticalAlignment="Top" />
+                    </Grid>
+                  </Expander>
+                </Grid>
+              </Border>
+            </StackPanel>
+          </ScrollViewer>
+
+          <Grid IsVisible="{Binding IsStructureSection}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="title" Text="Schema lens" />
+              <TextBlock Classes="muted" Text="See the shape of both systems at a glance. Reads are provider-specific and read-only; no destination DDL is generated or executed." />
+            </StackPanel>
+            <Border Grid.Row="1" Classes="card" Padding="14">
+              <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                <TextBlock Text="{Binding StructureSummary}" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="Select all common tables" Command="{Binding SelectAllTablesCommand}" />
+                <Button Grid.Column="2" Classes="primary" Content="Build transfer plan" Command="{Binding BuildTransferPlanCommand}" />
+              </Grid>
+            </Border>
+            <DataGrid Grid.Row="2" ItemsSource="{Binding TableComparisons}" SelectedItem="{Binding SelectedTableComparison, Mode=TwoWay}" AutoGenerateColumns="False" IsReadOnly="False" GridLinesVisibility="Horizontal" MinHeight="250">
+              <DataGrid.Columns>
+                <DataGridCheckBoxColumn Header="Transfer" Binding="{Binding IsSelected}" Width="90" />
+                <DataGridTextColumn Header="Table" Binding="{Binding Name}" Width="2*" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="140" />
+                <DataGridTextColumn Header="Differences" Binding="{Binding DifferenceSummary}" Width="3*" />
+              </DataGrid.Columns>
+            </DataGrid>
+            <Border Grid.Row="3" Classes="card" Padding="14">
+              <StackPanel Spacing="6">
+                <TextBlock FontWeight="SemiBold" Text="Selected table details" />
+                <TextBlock Text="{Binding SelectedTableDetails}" TextWrapping="Wrap" Classes="muted" />
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <Grid IsVisible="{Binding IsDataSection}" RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="title" Text="Row lens" />
+              <TextBlock Classes="muted" Text="Inspect what exists only on one side and what differs. Rows are matched by a shared primary or unique key with bounded samples." />
+            </StackPanel>
+            <Border Grid.Row="1" Classes="card" Padding="14">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <ComboBox ItemsSource="{Binding TableComparisons}" SelectedItem="{Binding SelectedTableComparison, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="1" Classes="primary" Content="Compare selected rows" Command="{Binding CompareDataCommand}" />
+              </Grid>
+            </Border>
+            <Border Grid.Row="2" Classes="metric">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{Binding DataSummary}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding DataMessage}" Classes="muted" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+            <DataGrid Grid.Row="3" ItemsSource="{Binding RowDifferences}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" MinHeight="250">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Kind" Binding="{Binding Kind}" Width="130" />
+                <DataGridTextColumn Header="Key" Binding="{Binding Key}" Width="2*" />
+                <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="3*" />
+                <DataGridTextColumn Header="Destination" Binding="{Binding Destination}" Width="3*" />
+              </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Grid.Row="4" Text="To move missing rows, choose the tables in Schema lens and build a move plan." Classes="muted" />
+          </Grid>
+
+          <Grid IsVisible="{Binding IsTransferSection}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="title" Text="Move plan" />
+              <TextBlock Classes="muted" Text="Direction: SOURCE → DESTINATION. This workflow inserts missing rows and never deletes, truncates, updates, alters, or upserts destination data." TextWrapping="Wrap" />
+              <TextBlock Text="{Binding TransferEndpoints}" FontWeight="SemiBold" TextWrapping="Wrap" />
+            </StackPanel>
+            <Border Grid.Row="1" Classes="card" Padding="14">
+              <StackPanel Spacing="8">
+                <TextBlock Text="{Binding TransferSummary}" FontWeight="SemiBold" />
+                <TextBlock Text="Review the row counts and any blocking messages below. The preview is calculated before execution." Classes="muted" />
+              </StackPanel>
+            </Border>
+            <DataGrid Grid.Row="2" ItemsSource="{Binding TransferPlanRows}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" MinHeight="250">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Table" Binding="{Binding TableName}" Width="2*" />
+                <DataGridTextColumn Header="To insert" Binding="{Binding RowsToInsert}" Width="110" />
+                <DataGridTextColumn Header="To skip" Binding="{Binding RowsToSkip}" Width="100" />
+                <DataGridTextColumn Header="Conflicts" Binding="{Binding Conflicts}" Width="100" />
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100" />
+                <DataGridTextColumn Header="Column mappings" Binding="{Binding Mappings}" Width="3*" />
+                <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="3*" />
+              </DataGrid.Columns>
+            </DataGrid>
+            <Border Grid.Row="3" Background="#FFF8E6" BorderBrush="#F4D06F" BorderThickness="1" CornerRadius="8" Padding="14">
+              <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                <CheckBox Content="I reviewed the preview and explicitly authorize insert-only transfer." IsChecked="{Binding ConfirmTransfer, Mode=TwoWay}" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Classes="danger" Content="Cancel" Command="{Binding CancelTransferCommand}" />
+                <Button Grid.Column="2" Classes="primary" Content="Execute insert-only transfer" Command="{Binding ExecuteTransferCommand}" />
+              </Grid>
+            </Border>
+          </Grid>
+
+          <Grid IsVisible="{Binding IsHistorySection}" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+            <StackPanel Spacing="4">
+              <TextBlock Classes="title" Text="Activity" />
+              <TextBlock Classes="muted" Text="Review local job outcomes by location and row count. Passwords and full connection strings are never stored here." />
+            </StackPanel>
+            <DataGrid Grid.Row="1" ItemsSource="{Binding History}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" MinHeight="300">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Started" Binding="{Binding StartedAt}" Width="170" />
+                <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="2*" />
+                <DataGridTextColumn Header="Destination" Binding="{Binding Destination}" Width="2*" />
+                <DataGridTextColumn Header="Tables" Binding="{Binding Tables}" Width="2*" />
+                <DataGridTextColumn Header="Inserted" Binding="{Binding InsertedRows}" Width="90" />
+                <DataGridTextColumn Header="Skipped" Binding="{Binding SkippedRows}" Width="90" />
+                <DataGridTextColumn Header="Failed" Binding="{Binding FailedRows}" Width="80" />
+                <DataGridTextColumn Header="Result" Binding="{Binding Message}" Width="2*" />
+              </DataGrid.Columns>
+            </DataGrid>
+            <Expander Grid.Row="2" Header="Diagnostics (secrets removed)">
+              <TextBox Text="{Binding DiagnosticText}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" />
+            </Expander>
+          </Grid>
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,14,0,0">
+          <TextBlock Text="{Binding ProgressSummary}" Classes="caption" TextWrapping="Wrap" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <TextBlock Text="{Binding UpdateStatus}" Classes="caption" VerticalAlignment="Center" MaxWidth="260" TextWrapping="Wrap" />
+            <Button Classes="compact" Content="Check for updates" Command="{Binding CheckForUpdatesCommand}" />
+            <Button Classes="primary compact" Content="Install update" IsVisible="{Binding UpdateAvailable}" Command="{Binding ApplyUpdateCommand}" />
+          </StackPanel>
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

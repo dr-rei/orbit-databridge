@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Dbms.Core</RootNamespace>
+    <AssemblyName>Dbms.Core</AssemblyName>
+  </PropertyGroup>
+</Project>

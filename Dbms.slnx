@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Dbms.App/Orbit.DataBridge.csproj" />
+    <Project Path="src/Dbms.Core/Dbms.Core.csproj" />
+    <Project Path="src/Dbms.Infrastructure/Dbms.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Dbms.Core.Tests/Dbms.Core.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,106 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Dbms.App.App">
+  <Application.Styles>
+    <FluentTheme />
+    <Style Selector="Window">
+      <Setter Property="Background" Value="#F7F8FC" />
+      <Setter Property="FontFamily" Value="Inter, Segoe UI, sans-serif" />
+    </Style>
+    <Style Selector="TextBlock.eyebrow">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="1.2" />
+      <Setter Property="Foreground" Value="#8B98B1" />
+    </Style>
+    <Style Selector="TextBlock.brand-wordmark">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="1.6" />
+      <Setter Property="Foreground" Value="#C7D0E2" />
+    </Style>
+    <Style Selector="TextBlock.product-wordmark">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="TextBlock.product-descriptor">
+      <Setter Property="FontSize" Value="10" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="1" />
+      <Setter Property="Foreground" Value="#AEBBD1" />
+    </Style>
+    <Style Selector="TextBlock.title">
+      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="#14213D" />
+    </Style>
+    <Style Selector="TextBlock.section-title">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="#14213D" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="#667085" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="#667085" />
+    </Style>
+    <Style Selector="Button.nav">
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Padding" Value="16,11" />
+      <Setter Property="Margin" Value="0,2" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="Foreground" Value="#42526E" />
+    </Style>
+    <Style Selector="Button.nav:pointerover">
+      <Setter Property="Background" Value="#E7E8FA" />
+      <Setter Property="Foreground" Value="#4142B7" />
+    </Style>
+    <Style Selector="Button.nav:pressed">
+      <Setter Property="Background" Value="#DCDDF8" />
+      <Setter Property="Foreground" Value="#4142B7" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#5B5CE2" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="Padding" Value="16,10" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.primary:pointerover">
+      <Setter Property="Background" Value="#4142B7" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#F2766B" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="Padding" Value="16,10" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.compact">
+      <Setter Property="Padding" Value="9,6" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="CornerRadius" Value="7" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="White" />
+      <Setter Property="BorderBrush" Value="#E3E7F0" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="Padding" Value="22" />
+    </Style>
+    <Style Selector="Border.metric">
+      <Setter Property="Background" Value="#F1F3F8" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="14" />
+    </Style>
+    <Style Selector="Border.safety">
+      <Setter Property="Background" Value="#FFF8E6" />
+      <Setter Property="BorderBrush" Value="#F1D27B" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="14" />
+    </Style>
+  </Application.Styles>
+</Application>

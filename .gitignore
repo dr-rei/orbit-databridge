@@ -1,0 +1,31 @@
+# .NET build output
+**/bin/
+**/obj/
+
+# Release and packaging output
+artifacts/
+publish/
+Releases/
+
+# IDE and local tooling
+.vs/
+.idea/
+*.user
+*.suo
+.vscode/
+
+# Local signing material and secrets
+*.pfx
+*.p12
+*.cer
+*.snk
+.env
+.env.*
+
+# Local test databases and logs
+*.db-shm
+*.db-wal
+*.log
+
+# Velopack local tool state
+.velopack/

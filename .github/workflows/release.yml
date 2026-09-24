@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  package-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore and test
+        run: |
+          dotnet restore .\Dbms.slnx
+          dotnet build .\Dbms.slnx -c Release --no-restore --verbosity minimal
+          dotnet test .\tests\Dbms.Core.Tests\Dbms.Core.Tests.csproj -c Release --no-restore --verbosity normal
+
+      - name: Validate release tag and prepare signing certificate
+        shell: pwsh
+        env:
+          SIGNING_CERT_BASE64: ${{ secrets.ORBIT_SIGNING_CERT_BASE64 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.ORBIT_SIGNING_CERT_PASSWORD }}
+        run: |
+          $version = $env:GITHUB_REF_NAME.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+([-.][0-9A-Za-z.-]+)?$') {
+            throw "Tag '$env:GITHUB_REF_NAME' is not a valid semantic version tag."
+          }
+          if ([string]::IsNullOrWhiteSpace($env:SIGNING_CERT_BASE64)) {
+            throw 'ORBIT_SIGNING_CERT_BASE64 is not configured.'
+          }
+          if ([string]::IsNullOrWhiteSpace($env:SIGNING_CERT_PASSWORD)) {
+            throw 'ORBIT_SIGNING_CERT_PASSWORD is not configured.'
+          }
+
+          $pfxPath = Join-Path $env:RUNNER_TEMP 'orbit-databridge-signing.pfx'
+          try {
+            [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGNING_CERT_BASE64))
+          } catch {
+            throw 'ORBIT_SIGNING_CERT_BASE64 is not valid base64 certificate data.'
+          }
+
+          "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "ORBIT_SIGNING_PFX=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Package signed Windows release
+        shell: pwsh
+        env:
+          ORBIT_SIGNING_CERT_PASSWORD: ${{ secrets.ORBIT_SIGNING_CERT_PASSWORD }}
+        run: |
+          if (-not (Test-Path -LiteralPath $env:ORBIT_SIGNING_PFX)) {
+            throw 'The signing certificate was not prepared.'
+          }
+          $env:VPK_SIGN_PARAMS = '/fd SHA256 /f "' + $env:ORBIT_SIGNING_PFX + '" /p "' + $env:ORBIT_SIGNING_CERT_PASSWORD + '" /tr "http://timestamp.digicert.com" /td SHA256'
+          .\scripts\package-win.ps1 -Version $env:RELEASE_VERSION -RequireSigning
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $assets = @(Get-ChildItem -LiteralPath .\artifacts\release -File | ForEach-Object { $_.FullName })
+          if ($assets.Count -eq 0) {
+            throw 'No release assets were produced.'
+          }
+          $ghArguments = @(
+            'release', 'create', "v$env:RELEASE_VERSION",
+            '--repo', $env:GITHUB_REPOSITORY,
+            '--title', "Orbit DataBridge $env:RELEASE_VERSION",
+            '--generate-notes',
+            '--latest'
+          ) + $assets
+          & gh @ghArguments
+          if ($LASTEXITCODE -ne 0) {
+            throw "gh release create failed with exit code $LASTEXITCODE."
+          }
+
+      - name: Remove signing certificate
+        if: always()
+        shell: pwsh
+        run: |
+          if (-not [string]::IsNullOrWhiteSpace($env:ORBIT_SIGNING_PFX) -and (Test-Path -LiteralPath $env:ORBIT_SIGNING_PFX)) {
+            Remove-Item -LiteralPath $env:ORBIT_SIGNING_PFX -Force
+          }
